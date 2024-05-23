@@ -11,7 +11,7 @@ import { listarFactura } from "../apiUrls";
 import Cargando from "../Cargando"
 
 const TablaFactura = (props) => {
-    const { listaFactura, setListaFactura, listaNotaPeso} = useContextFactura();
+    const { listaFactura, setListaFactura, listaNotaPeso, listaClientes} = useContextFactura();
     const [cargandoDatos, setCargandoDatos] = useState(false);
     useEffect(() => {
         ActualizarTabla();
@@ -59,7 +59,7 @@ const TablaFactura = (props) => {
                     createdCell: (td, cellData, rowData, row, col) => {
                         const root = createRoot(td);
                         root.render(
-                                <ModalFacturaForm key={rowData.id} accion={false} datosFactura={rowData} ActualizarTabla={ActualizarTabla} datosNotaPeso={listaNotaPeso} ></ModalFacturaForm>
+                                <ModalFacturaForm key={rowData.id} accion={false} datosFactura={rowData} ActualizarTabla={ActualizarTabla} datosNotaPeso={listaNotaPeso} datosCliente={listaClientes}></ModalFacturaForm>
                         );
                     }
                 },

@@ -1,9 +1,7 @@
-import React, { useEffect, useReducer, useState } from "react"
+import React, { useEffect, useState } from "react"
 import { InventarioContext } from "./InventarioContext"
-import { AxiosPrivado, AxiosPublico } from "../../components/axios/Axios";
+import { AxiosPrivado} from "../../components/axios/Axios";
 import { listarInventario, listarProductos } from "../../components/apiUrls";
-import { mostraAlerta } from "../../components/Alerts/sweetAlert";
-import { set } from "date-fns";
 
 export const InventarioState = (props) => {
     // Estado para el inventario actual

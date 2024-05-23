@@ -1,14 +1,13 @@
-import React, { useContext, useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { Button, Modal } from "react-bootstrap";
-import { mostraAlerta, mostraAlertaError, mostraAlertaOk } from "../../Alerts/sweetAlert";
+import { mostraAlerta } from "../../Alerts/sweetAlert";
 import Select from "react-select";
-import { guardarNotaPeso, editarNotaPeso, guardarDetalle, editarDetalle } from "../../apiUrls";
+import { guardarNotaPeso, editarNotaPeso } from "../../apiUrls";
 import ModalInformacionNotaPeso from "./modalInformacionNotaPeso";
 import { AxiosPrivado } from "../../axios/Axios";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import BuscarCliente from "../Clientes/BuscarCliente";
-import moment from "moment";
 import 'moment/locale/es'
 
 function ModalNotaPesoForm({ accion, datosNotaPeso, ActualizarTabla, listaClientes, datosProductos }) {

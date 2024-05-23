@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import { Modal, Table, Pagination } from "react-bootstrap";
+import { Modal } from "react-bootstrap";
 
 const ModalInformacionAlquileres = ({
     datos,

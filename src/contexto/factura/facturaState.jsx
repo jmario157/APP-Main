@@ -24,6 +24,7 @@ export const FacturaState = (props) => {
             const response = await AxiosPrivado.get(listarFactura)
             setListaFactura(response.data.datos)
             const responseNotaPeso = await AxiosPrivado.get(listarNotaPeso)
+            console.log(responseNotaPeso.data)
             setListaNotaPeso(responseNotaPeso.data.datos);
             const responseClientes = await AxiosPrivado.get(listarClientes)
             console.log(responseClientes.data)

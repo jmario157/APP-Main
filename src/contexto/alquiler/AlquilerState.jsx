@@ -1,9 +1,8 @@
-import React, { useEffect, useReducer, useState } from "react"
+import React, { useEffect, useState } from "react"
 import { AlquilerContext } from "./AlquilerContext"
-import { AxiosPrivado, AxiosPublico } from "../../components/axios/Axios";
-import { listarAlquileres, listarLugares } from "../../components/apiUrls";
-import { mostraAlerta } from "../../components/Alerts/sweetAlert";
-import { set } from "date-fns";
+import { AxiosPrivado } from "../../components/axios/Axios";
+import { listarAlquileres} from "../../components/apiUrls";
+
 
 export const AlquilerState = (props) => {
     const [listaAlquileres, setListaAlquileres] = useState([]);

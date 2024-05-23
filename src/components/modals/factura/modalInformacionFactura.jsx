@@ -2,6 +2,7 @@ import React from "react";
 import { Modal } from "react-bootstrap";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
+import logo from '../../../imagenes/inca.png'
 
 const ModalInformacionFactura = ({ datos, showModal, setShowModalInformacion }) => {
     // Función para calcular el total del peso neto de todas las notas de peso
@@ -20,14 +21,22 @@ const ModalInformacionFactura = ({ datos, showModal, setShowModalInformacion }) 
         const pdf = new jsPDF();
         pdf.setFontSize(12);
         pdf.setFont("helvetica", "bold");
-        pdf.text("DESOFIW", 100, 20);
-        pdf.text(`Fecha de Emision: ${datos?.fechaEmision}`, 20, 30);
+        pdf.text("Beneficio de café alianza ", 100, 15);
+        pdf.setFontSize(12);
+        pdf.text("Florida de San José La Paz ", 100, 20);
+        pdf.text("Cel. 98263554", 100, 25);
+        pdf.text("RTN 12121985000940", 100, 30);
+        
 
-        let y = 40;
+        pdf.addImage(logo, 'PNG', 15, 10, 30, 30);
+
+        let y = 60;
 
         datos?.Nota.forEach((nota) => {
             pdf.setFontSize(10);
             pdf.setFont("helvetica", "normal");
+            pdf.text(`Fecha de Emision: ${datos?.fechaEmision}`, 20, y);
+            y += 10;
             pdf.text(`Nota de Peso No.: ${nota.id}`, 20, y);
             y += 10;
             pdf.text(`Cliente: ${nota.cliente.nombreprimer} ${nota.cliente.nombresegundo} ${nota.cliente.apellidoprimer} ${nota.cliente.apellidosegundo}`, 20, y);

@@ -28,30 +28,30 @@ const BuscarNotaPeso = ({lista, buscarIdnota}) => {
                 },
                 {
                     "target": 1,
-                    "data": "fehaIngreso",
+                    "data": "fechaIngreso",
                     "title": "Fecha de Ingreso",
                     render: (data, type, row) => row.fechaIngreso
                 },
                 {
                     "target": 2,
-                    "data": "nombreprimer",
+                    "data": null,
                     "title": "Nombre Cliente",
                     render: (data, type, row) => row.cliente.nombreprimer + ' ' + row.cliente.nombresegundo + ' ' + row.cliente.apellidoprimer + ' ' + row.cliente.apellidosegundo
                 },
                 {
                     "target": 3,
-                    "data": "tipoProducto",
+                    "data": null,
                     "title": "Tipo de Cafe",
                     render: (data, type, row) => row.Producto.tipoProducto
                 },
+                // {
+                //     "target": 4,
+                //     "data": null,
+                //     "title": "Peso Neto",
+                //     render: (data, type, row) => row.Detalle ? row.Detalle.pesoNeto : ''
+                // },
                 {
-                    "target": 4,
-                    "data": "pesoNeto",
-                    "title": "Peso Neto",
-                    render: (data, type, row) => row.Detalle.pesoNeto
-                },
-                {
-                    "targets": 2,
+                    "targets": 4,
                     "data": null,
                     "title": "Opciones",
                     createdCell: (td, cellData, rowData, row, col) => {
@@ -98,10 +98,10 @@ const BuscarNotaPeso = ({lista, buscarIdnota}) => {
     }
 
     const seleccionNotaPeso = (e) => {
-        const cli = e.target.value
-        buscarIdnota(cli)
+        const idNotaPeso = e.target.value;
+        buscarIdnota(idNotaPeso);
         cerrarModal();
-    }
+    };    
 
     return (
         <div className="input-group-prepend">

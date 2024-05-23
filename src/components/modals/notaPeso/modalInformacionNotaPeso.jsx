@@ -2,6 +2,7 @@ import React from "react";
 import { Modal } from "react-bootstrap";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
+import logo from '../../../imagenes/inca.png'
 
 
 const ModalInformacionNotaPeso = ({ datos, showModal, setShowModalInformacion }) => {
@@ -18,23 +19,29 @@ const ModalInformacionNotaPeso = ({ datos, showModal, setShowModalInformacion })
     // Función para generar y descargar el PDF del ticket de la nota de peso
     const handlePrintPDF = () => {
         const pdf = new jsPDF();
-        pdf.setFontSize(12);
+        pdf.setFontSize(14);
         // Título en negrita
         pdf.setFont("helvetica", "bold");
-        pdf.text("DESOFIW", 100, 20);
-        pdf.text("Cliente:", 15, 40);
-        pdf.text("Fecha y Hora:", 15, 50);
-        pdf.text("Tipo de café:", 15, 60);
-        pdf.text("Estado:", 15, 70);
+        pdf.text("Beneficio de café alianza ", 100, 15);
+        pdf.setFontSize(12);
+        pdf.text("Florida de San José La Paz ", 100, 20);
+        pdf.text("Cel. 98263554", 100, 25);
+        pdf.text("RTN 12121985000940", 100, 30);
+        pdf.text("Cliente:", 15, 60);
+        pdf.text("Fecha y Hora:", 15, 70);
+        pdf.text("Tipo de café:", 15, 80);
+        pdf.text("Estado:", 15, 90);
+
+        pdf.addImage(logo, 'PNG', 15, 10, 30, 30);
 
         // Contenido en texto normal
         pdf.setFont("helvetica", "normal");
-        pdf.text(`${datos?.cliente.nombreprimer} ${datos?.cliente.nombresegundo} ${datos?.cliente.apellidoprimer} ${datos?.cliente.apellidosegundo}`, 40, 40);
-        pdf.text(`${datos?.fechaIngreso}`, 50, 50);
-        pdf.text(`${datos?.Producto.tipoProducto}`, 50, 60);
-        pdf.text(`${datos?.estado ? "Deposito" : "Pendiente"}`, 50, 70);
+        pdf.text(`${datos?.cliente.nombreprimer} ${datos?.cliente.nombresegundo} ${datos?.cliente.apellidoprimer} ${datos?.cliente.apellidosegundo}`, 40, 60);
+        pdf.text(`${datos?.fechaIngreso}`, 50, 70);
+        pdf.text(`${datos?.Producto.tipoProducto}`, 50, 80);
+        pdf.text(`${datos?.estado ? "Deposito" : "Pendiente"}`, 50, 90);
     
-        let y = 80;
+        let y = 100;
     
         // Mostrar detalles en formato de tabla
         pdf.autoTable({

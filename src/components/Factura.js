@@ -11,7 +11,7 @@ import { AxiosPrivado } from "./axios/Axios";
 
 const Factura = () => {
     // Obtiene y actualiza la lista de facturas del contexto
-    const { setListaFactura, listaNotaPeso } = useContextFactura();
+    const { setListaFactura, listaNotaPeso, listaClientes } = useContextFactura();
     const [cargandoDatos, setCargandoDatos] = useState(false);
 
     useEffect(() => {
@@ -69,7 +69,7 @@ const Factura = () => {
                                         <h6 className="card-title">Modulo de Factura</h6>
                                         <p className="card-text">Este modulo le permite gestionar la información de cada una de las facturas.</p>
                                         {/* Componente para crear una nueva factura */}
-                                        <ModalFacturaForm buttonLabel="Crear Factura" accion={true} datosDelProyecto={null} ActualizarTabla={ActualizarTabla} datosNotaPeso={listaNotaPeso} />
+                                        <ModalFacturaForm buttonLabel="Crear Factura" accion={true} datosDelProyecto={null} ActualizarTabla={ActualizarTabla} listaNotaPeso={listaNotaPeso} listaClientes={listaClientes}/>
                                         <span style={{ margin: "0 12px" }}></span>
                                     </div>
                                 </div>

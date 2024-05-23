@@ -1,15 +1,15 @@
-import React, { useContext, useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Button, Modal } from "react-bootstrap";
-import { mostraAlerta, mostraAlertaError, mostraAlertaOk } from "../../Alerts/sweetAlert";
+import { mostraAlerta } from "../../Alerts/sweetAlert";
 import Select from "react-select";
 import { guardarFactura, editarFactura } from "../../apiUrls";
 import ModalInformacionFactura from "./modalInformacionFactura";
 import { AxiosPrivado } from "../../axios/Axios";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import BuscarNotaPeso from "../notaPeso/BuscarNotaPeso";
+import BuscarNotaPeso from "../notaPeso/BuscarNotaPeso"
 
-function ModalFacturaForm({ accion, datosFactura, ActualizarTabla, datosNotaPeso }) {
+function ModalFacturaForm({ accion, datosFactura, ActualizarTabla, listaNotaPeso }) {
     // Estado para controlar si el modal está abierto o cerrado
     const [showModal, setShowModal] = useState(false);
     const [showModalInformacion, setShowModalInformacion] = useState(false);
@@ -24,10 +24,9 @@ function ModalFacturaForm({ accion, datosFactura, ActualizarTabla, datosNotaPeso
     const [datosCargados, setDatosCargados]= useState(false);
     // Estado para la fecha de emisión de la factura
     const [fechaEmision, setFechaEmision] = useState(new Date());
-    // Estado para los IDs de las notas de peso seleccionadas
-    const [NotumId, setNotumId] = useState(datosFactura ? datosFactura.NotumId : []);
     // Estado para almacenar el peso neto total de cada nota de peso
-    const [totalPesoNetoNotas, setTotalPesoNetoNotas] = useState({});
+
+    const [notasPeso, setNotasPeso] = useState([]);
 
     <DatePicker
     selected={fechaEmision}
@@ -35,22 +34,20 @@ function ModalFacturaForm({ accion, datosFactura, ActualizarTabla, datosNotaPeso
     dateFormat="dd/MM/yyyy HH:mm" // Formato de fecha
     />
 
-    const Producto = datosNotaPeso?.map((f) => ({
-        value: f.id,
-    }));
-
     const [formularioFactura, setFormularioFactura] = useState({
         id: datosFactura ? datosFactura.id : null,
         fechaEmision: datosFactura ? new Date(datosFactura.fechaEmision) : new Date(),        
         tipoPago: datosFactura ? datosFactura.tipoPago : "",
-        NotumId: datosFactura ? datosFactura.NotumId : null,
+        NotumId: datosFactura ? (Array.isArray(datosFactura.NotumId) ? datosFactura.NotumId : [datosFactura.NotumId]) : [], // Inicializa con la nota de peso existente
     }); 
 
     useEffect(() => {
         if(datosFactura != null){
+            buscarIdnota(datosFactura.NotumId);
             setFormularioFactura({
                 ...formularioFactura,
                 ...datosFactura,
+                NotumId: Array.isArray(datosFactura.NotumId) ? datosFactura.NotumId : [datosFactura.NotumId]
             });
         } else{
             limpiarCampos();
@@ -59,37 +56,27 @@ function ModalFacturaForm({ accion, datosFactura, ActualizarTabla, datosNotaPeso
 
     useEffect(() => {
         if(datosFactura != null && !datosCargados) {
+            buscarIdnota(datosFactura.NotumId);
             setFormularioFactura({
                 ...formularioFactura,
-                ...datosFactura
+                ...datosFactura,
+                NotumId: Array.isArray(datosFactura.NotumId) ? datosFactura.NotumId : [datosFactura.NotumId]
             });
             setDatosCargados(true);
         }
     }, [showModal, datosFactura, datosCargados]);
 
-    useEffect(() => {
-        setFormularioFactura({
-            ...formularioFactura,
-            NotumId: NotumId
-        })
-    }, [fechaEmision, NotumId]);
-
-    // Función para calcular el total del peso neto de todas las notas de peso
-    useEffect(() => {
-        const calcularTotalPesoNetoNotas = () => {
-            const totalPesoNeto = {};
-            datosNotaPeso.forEach((nota) => {
-                let total = 0;
-                nota.Detalles.forEach((detalle) => {
-                    total += detalle.pesoNeto;
-                });
-                totalPesoNeto[nota.id] = total;
-            });
-            return totalPesoNeto;
-        };
-        setTotalPesoNetoNotas(calcularTotalPesoNetoNotas());
-    }, [datosNotaPeso]);
-    
+    const buscarIdnota = (id) => {
+        if (id == null) return; // Evita errores si id es null o undefined
+        const notaSeleccionada = listaNotaPeso?.find((nota) => nota.id == id);
+        if (notaSeleccionada) {
+            if (!notasPeso.includes(id)) {
+                setNotasPeso([...notasPeso, id]); // Agrega el ID a la lista
+            }
+        } else {
+            setNotasPeso(notasPeso.filter((notaId) => notaId !== id)); // Remueve el ID de la lista
+        }
+    };      
 
     const saveFactura = async () => {
         if (formularioFactura.fechaEmision === "") {
@@ -116,14 +103,14 @@ function ModalFacturaForm({ accion, datosFactura, ActualizarTabla, datosNotaPeso
                         ActualizarTabla();
                         mostraAlerta(response.data.msj, "success");
                         limpiarCampos();
-                    } else if (response.data.tipo === 0) {
+                    } else if (response.data.tipo == 0) {
                         for (let i = 0; i < response.data.msj.length; i++) {
                             response.data.msj.forEach((element) => {
                                 console.log(element);
                                 mostraAlerta("Ha ocurrido un error", "warning");
                             });
                         }
-                    } else if (response.data.tipo === 2) {
+                    } else if (response.data.tipo == 2) {
                         response.data.msj.forEach((element) => {
                             console.log(element.campo + " " + element.msj);
                             mostraAlerta("El campo: " + element.campo + ", " + element.msj);
@@ -151,13 +138,14 @@ function ModalFacturaForm({ accion, datosFactura, ActualizarTabla, datosNotaPeso
 
     // Función para manejar cambios en los IDs de las notas de peso
     const manejadorIds = (event) => {
-        // Obtiene el valor del campo de texto
         const { value } = event.target;
-        // Divide el valor por comas y elimina los espacios, creando un array de IDs
-        const ids = value.split(",").map((id) => id.trim());
-        // Actualiza el estado de los IDs de las notas de peso
-        setNotumId(ids);
-    };
+        const ids = value.trim() === "" ? [] : value.split(",").map((id) => id.trim());
+        setFormularioFactura({
+            ...formularioFactura,
+            NotumId: ids,
+        });
+        setNotasPeso(ids);
+    };   
 
     const modificarFactura =  async () => {
         if (formularioFactura.fechaEmision === "") {
@@ -178,17 +166,17 @@ function ModalFacturaForm({ accion, datosFactura, ActualizarTabla, datosNotaPeso
             .put(editarFactura + formularioFactura.id, formularioFactura)
             .then((response) => {
                 console.log("Respuesta:", response.data);
-                if(response.data.tipo === 1){
+                if(response.data.tipo == 1){
                     ActualizarTabla();
                     mostraAlerta(response.data.msj, "success");
                     handleClose();
                     limpiarCampos();
-                }else if(response.data.tipo === 0){
+                }else if(response.data.tipo == 0){
                     response.data.msj.forEach((element) => {
                         console.log(element.campo + " " + element.msj);
                         mostraAlerta("El campo: " + element.campo + ", " + element.msj)
                     });
-                }else if(response.data.tipo === 2){
+                }else if(response.data.tipo == 2){
                     response.data.msj.forEach((element) => {
                         console.log(element.campo + " " + element.msj);
                         mostraAlerta("El campo: " + element.campo + ", " + element.msj)
@@ -208,7 +196,7 @@ function ModalFacturaForm({ accion, datosFactura, ActualizarTabla, datosNotaPeso
             tipoPago: "",
             NotumId: null,
         });
-        setNotumId(null);
+        setNotasPeso([]);
     };
 
     const handleOpenModal = () => {
@@ -262,7 +250,7 @@ function ModalFacturaForm({ accion, datosFactura, ActualizarTabla, datosNotaPeso
                             </div>
                             <div className="card-body">
                                 <div className="row">
-                                    <div className="form-group col-md-5">
+                                    <div className="form-group col-md-6">
                                         <label htmlFor="fechaEmision">Fecha de Emision</label>
                                         <DatePicker
                                             //type="date"
@@ -294,26 +282,28 @@ function ModalFacturaForm({ accion, datosFactura, ActualizarTabla, datosNotaPeso
                                             {errorTipoPago && <div className="invalid-feedback">Este campo es requerido.</div>}
                                         </div>
                                     </div>
-                                    {/* // Campo de entrada para ingresar los IDs de las notas de peso */}
-                                    <div className="col-sm-3">
-                                        <div className="form-group">
-                                            <label>Nota de peso</label>
-                                            <input
-                                                type="text"
-                                                className="form-control"
-                                                id="exampleInputNotasPeso"
-                                                value={NotumId ? NotumId.join(",") : ""}
-                                                onChange={manejadorIds}
-                                            />
-                                        </div>
+                                    <div className="form-group col-sm-12">
+                                        <label>Notas de Peso:</label>
+                                        <Select
+                                            isMulti
+                                            options={listaNotaPeso ? listaNotaPeso.map((nota) => ({
+                                                value: nota.id,
+                                                label: `Nota ${nota.id} - Fecha: ${nota.fechaIngreso} - Cliente: ${nota.cliente.nombreprimer + " " + nota.cliente.apellidoprimer} - Producto: ${nota.Producto.tipoProducto}`,
+                                            })) : []}
+                                            value={notasPeso ? notasPeso.map((id) => ({
+                                                value: id,
+                                                label: `Nota ${id}`,
+                                            })) : []}
+                                            onChange={(selectedOptions) => {
+                                                const ids = selectedOptions.map((option) => option.value);
+                                                setFormularioFactura({
+                                                    ...formularioFactura,
+                                                    NotumId: ids,
+                                                });
+                                                setNotasPeso(ids);
+                                            }}
+                                        />
                                     </div>
-                                    {/* // Muestra los IDs de las notas de peso seleccionadas y su peso neto total */}
-                                    {NotumId && NotumId.map((id) => (
-                                        <div key={id}>
-                                            <p className="text-muted"><strong>ID:</strong> {id}</p>
-                                            <p className="text-muted"><strong>Total Peso Neto:</strong> {totalPesoNetoNotas[id]}</p>
-                                        </div>
-                                    ))}
                                 </div> 
                             </div>
                         </form>
